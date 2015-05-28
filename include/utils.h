@@ -1,7 +1,19 @@
-#ifndef __UTILS_H__
-#define __UTILS_H__
+/*
+ * utils.h
+ *
+ *  Created on: 23 мая 2015 г.
+ *      Author: Bravo13
+ */
 
-void ICACHE_FLASH_ATTR debug( char* msg );
-void ICACHE_FLASH_ATTR print_sys_info( void );
+#ifndef INCLUDE_UTILS_H_
+#define INCLUDE_UTILS_H_
 
-#endif
+
+void debug(const char *msg);
+int get_config(JsonObject& jsonp);
+int set_config( JsonObject& jsonp );
+void first_run();
+
+
+
+#endif /* INCLUDE_UTILS_H_ */
