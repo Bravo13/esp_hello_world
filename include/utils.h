@@ -10,9 +10,11 @@
 
 
 void debug(const char *msg);
-int get_config(JsonObject& jsonp);
-int set_config( JsonObject& jsonp );
 void first_run();
+void web_cb_index(HttpRequest &request, HttpResponse &response);
+void web_cb_connect(HttpRequest &request, HttpResponse &response);
+void web_cb_scan_status(HttpRequest &request, HttpResponse &response);
+void web_cb_start_scan(HttpRequest &request, HttpResponse &response);
 
 
 

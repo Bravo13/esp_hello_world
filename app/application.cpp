@@ -2,28 +2,24 @@
 #include <SmingCore/SmingCore.h>
 
 #include "utils.h"
+#include "AppSettings.h"
+
 #define FIRST_RUN_PIN 4
 
-DynamicJsonBuffer jsonBuffer;
-JsonObject& config = jsonBuffer.createObject();
 
 void init()
 {
 	Serial.begin(115200);
-//	SystemClock.setTimezone(2);
-//	SystemClock.setNtpSync("ntp1.stratum2.ru", 1000);
 	debug("Starting...");
 	pinMode(FIRST_RUN_PIN, INPUT);
 
-	if(digitalRead(FIRST_RUN_PIN) && get_config(config)){
-		config["test"] = "test";
-		config.printTo(Serial);
-// connect to wifi
+	if(digitalRead(FIRST_RUN_PIN) && AppSettings.load() && AppSettings.ssid.length()){
+		Serial.println( os_printf("Config ver %s", AppSettings.ver.c_str()) );
+		
 	} else {
-// Find networks
+		AppSettings.ver = "0.1a";
+		AppSettings.save();
 		first_run();
-		config["data"] = "data";
-		set_config(config);
 	}
 
 }
