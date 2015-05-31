@@ -27,7 +27,7 @@ void networkScanCompleted(bool succeeded, BssList list)
 }
 
 void web_cb_index(HttpRequest &request, HttpResponse &response) {
-	TemplateFileStream *tmpl = new TemplateFileStream("index.html");
+	TemplateFileStream *tmpl = new TemplateFileStream("index.tpl");
 	auto &vars = tmpl->variables();
 	response.sendTemplate(tmpl); // will be automatically deleted	
 }
@@ -62,15 +62,31 @@ void web_cb_start_scan(HttpRequest &request, HttpResponse &response) {
 	scanStatus = 1;
 }
 
+void onFile(HttpRequest &request, HttpResponse &response)
+{
+	String file = request.getPath();
+	if (file[0] == '/')
+		file = file.substring(1);
+
+	if (file[0] == '.')
+		response.forbidden();
+	else {
+		response.setCache(86400, true); // It's important to use cache for better performance.
+		response.sendFile(file);
+		Serial.println(file);
+	}
+}
+
 void first_run() {
 	WifiAccessPoint.config("Sming Configuration", "", AUTH_OPEN);
 	WifiAccessPoint.enable(true);
 
 	server.listen(80);
+	server.addPath("/", web_cb_index);
 	server.addPath("/scan", web_cb_start_scan);
 	server.addPath("/scanStatus", web_cb_scan_status);
 	server.addPath("/connect", web_cb_connect);
-	server.setDefaultHandler(web_cb_index);
+	server.setDefaultHandler(onFile);
 
 	debug("Access point ready to scan");
 }

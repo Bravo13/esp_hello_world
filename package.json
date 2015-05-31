@@ -1,0 +1,13 @@
+{
+  "name": "esp_hello_world_webgui",
+  "version": "0.1.0",
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-nodeunit": "~0.4.1",
+    "grunt-contrib-uglify": "~0.5.0",
+		"grunt-contrib-concat": "~0.5.1",
+		"grunt-contrib-compress":"~0.13.0"
+  },
+  "description": "First steps in native ESP8266 SDK(using Sming framework)"
+}

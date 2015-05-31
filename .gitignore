@@ -2,3 +2,6 @@ out
 .settings
 .cproject
 .project
+files/*
+webgui/build
+node_modules
