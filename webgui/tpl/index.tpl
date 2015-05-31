@@ -17,11 +17,11 @@
 				<div class="cell"></div>
 			</div>
 		</div>
-		<div class="accordion hidden" data-close-any="true">
+		<div class="accordion-template hidden" data-close-any="true">
 			<div class="frame">
 				<div class="heading">
-					<span>{ssid}</span>
-					<img src="signal.svg" class="iconic svg-inject iconic-signal-strong" />
+					<span class="ssid-name">{ssid}</span>
+					<img class="ssid-strength" src="signal.svg" class="" />
 				</div>
 				<div class="content">
 					<form action="/connect">

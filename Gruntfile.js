@@ -8,6 +8,8 @@ module.exports = function(grunt) {
 			'webgui/build/libs.css': 'webgui/css/libs/*.css',
 			'files/app.css' :'webgui/css/app.css',
 			'files/app.js' :'webgui/js/app.js',
+			'files/index.tpl' :'webgui/tpl/index.tpl',
+			'files/signal.svg' :'webgui/src/signal.svg',
 		},
 		compress: {
 			main: {
