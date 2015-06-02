@@ -6,6 +6,7 @@
  */
 #include <SmingCore/SmingCore.h>
 #include <osapi.h>
+#include "driver.h"
 
 int scanStatus = 0;
 BssList networks;
@@ -78,16 +79,80 @@ void onFile(HttpRequest &request, HttpResponse &response)
 	}
 }
 
-void first_run() {
-	WifiAccessPoint.config("Sming Configuration", "", AUTH_OPEN);
-	WifiAccessPoint.enable(true);
+void web_cb_driver_pos(HttpRequest &request, HttpResponse &response) {
+	debug("Driver pos command");
+	JsonObjectStream* stream = new JsonObjectStream();
+	JsonObject& json = stream->getRoot();
+	json["pos"] = driver_pos();
+	response.setAllowCrossDomainOrigin("*");
+	response.sendJsonObject(stream);
+	scanStatus = 1;
+}
 
+void web_cb_driver_forward(HttpRequest &request, HttpResponse &response) {
+	debug("Driver forward command");
+	JsonObjectStream* stream = new JsonObjectStream();
+	JsonObject& json = stream->getRoot();
+	json["forward"] = 1;
+	driver_stop();
+	driver_fw();
+	response.setAllowCrossDomainOrigin("*");
+	response.sendJsonObject(stream);
+	scanStatus = 1;
+}
+
+void web_cb_driver_backward(HttpRequest &request, HttpResponse &response) {
+	debug("Driver backward command");
+	JsonObjectStream* stream = new JsonObjectStream();
+	JsonObject& json = stream->getRoot();
+	json["backward"] = 1;
+	driver_stop();
+	driver_bw();
+	response.setAllowCrossDomainOrigin("*");
+	response.sendJsonObject(stream);
+	scanStatus = 1;
+}
+
+void web_cb_driver_stop(HttpRequest &request, HttpResponse &response) {
+	debug("Driver stop command");
+	JsonObjectStream* stream = new JsonObjectStream();
+	JsonObject& json = stream->getRoot();
+	json["stop"] = 1;
+	driver_stop();
+	response.setAllowCrossDomainOrigin("*");
+	response.sendJsonObject(stream);
+	scanStatus = 1;
+}
+
+void web_cb_driver_setpos(HttpRequest &request, HttpResponse &response) {
+	int curr_pos = driver_pos();
+	int pos = request.getQueryParameter("pos").toInt();
+	Serial.println( os_printf("Driver setpos %d command", pos) );
+	JsonObjectStream* stream = new JsonObjectStream();
+	JsonObject& json = stream->getRoot();
+	driver_stop();
+	driver_set_pos( pos );
+	response.setAllowCrossDomainOrigin("*");
+	response.sendJsonObject(stream);
+	scanStatus = 1;
+}
+
+void web_run() {
 	server.listen(80);
-	server.addPath("/", web_cb_index);
+	server.addPath("/driver/pos", web_cb_driver_pos);
+	server.addPath("/driver/setpos", web_cb_driver_setpos);
+	server.addPath("/driver/forward", web_cb_driver_forward);
+	server.addPath("/driver/backward", web_cb_driver_backward);
+	server.addPath("/driver/stop", web_cb_driver_stop);
 	server.addPath("/scan", web_cb_start_scan);
 	server.addPath("/scanStatus", web_cb_scan_status);
 	server.addPath("/connect", web_cb_connect);
 	server.setDefaultHandler(onFile);
+}
+
+void first_run() {
+	WifiAccessPoint.config("Sming Configuration", "", AUTH_OPEN);
+	WifiAccessPoint.enable(true);
 
 	ftp.listen(21);
 	ftp.addUser("me", "123"); // FTP account
