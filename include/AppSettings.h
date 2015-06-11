@@ -28,7 +28,7 @@ struct ApplicationSettingsStorage
 		strcpy(chJsonString, jsonString.c_str());
 		JsonObject& root = jsonBuffer.parseObject(chJsonString);
 		if(root.containsKey("ver")){
-			ver = root["ver"];
+			ver = root["ver"].toString();
 
 			JsonObject& network = root["network"];
 			ssid = network["ssid"].toString();
@@ -47,10 +47,10 @@ struct ApplicationSettingsStorage
 
 		JsonObject& network = jsonBuffer.createObject();
 		root["network"] = network;
-		network["ssid"] = ssid;
-		network["password"] = password;
+		network["ssid"] = ssid.c_str();
+		network["password"] = password.c_str();
 
-		root["ver"] = ver;
+		root["ver"] = ver.c_str();
 
 
 		char buf[3048];

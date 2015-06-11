@@ -44,7 +44,7 @@ void web_cb_scan_status(HttpRequest &request, HttpResponse &response) {
 	for (int i = 0; i < networks.count(); i++) {
 		JsonObject &item = netlist.createNestedObject();
 		item.add("id", (int)networks[i].getHashId());
-		item.add("title", networks[i].ssid);
+		item.add("title", networks[i].ssid.c_str());
 		item.add("signal", networks[i].rssi);
 		item.add("encryption", networks[i].getAuthorizationMethodName());
 	}
@@ -153,10 +153,6 @@ void web_run() {
 void first_run() {
 	WifiAccessPoint.config("Sming Configuration", "", AUTH_OPEN);
 	WifiAccessPoint.enable(true);
-
-	ftp.listen(21);
-	ftp.addUser("me", "123"); // FTP account
-
 	debug("Access point ready to scan");
 }
 
