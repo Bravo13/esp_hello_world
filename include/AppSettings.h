@@ -1,7 +1,7 @@
 /*
  * AppSettings.h
  *
- *  Created on: 13 мая 2015 г.
+ *  Created on: 13 пїЅпїЅпїЅ 2015 пїЅ.
  *      Author: Anakod
  */
 
@@ -22,17 +22,15 @@ struct ApplicationSettingsStorage
 	{
 		DynamicJsonBuffer jsonBuffer;
 		int size = fileGetSize(APP_SETTINGS_FILE);
-		String jsonString;
-		jsonString = fileGetContent(APP_SETTINGS_FILE);
-		char *chJsonString = new char[jsonString.length()+1];
-		strcpy(chJsonString, jsonString.c_str());
+		char *chJsonString = new char[size+1];
+		fileGetContent(APP_SETTINGS_FILE, chJsonString, size);
 		JsonObject& root = jsonBuffer.parseObject(chJsonString);
 		if(root.containsKey("ver")){
-			ver = root["ver"].toString();
+			ver = root["ver"];
 
 			JsonObject& network = root["network"];
-			ssid = network["ssid"].toString();
-			password = network["password"].toString();
+			ssid = network["ssid"];
+			password = network["password"];
 
 			return 1;
 		} else {

@@ -3,6 +3,7 @@
 #####################################################################
 # Including user Makefile.
 # Should be used to set project-specific parameters
+
 include ./Makefile-user.mk
 
 # Important parameters check.
@@ -17,4 +18,10 @@ $(error ESP_HOME is not set. Please configure it in Makefile-user.mk)
 endif
 
 # Include main Sming Makefile
-include c:/tools/Sming/Sming/Makefile-project.mk
+ifeq( $(OS), Windows_NT )
+	include c:/tools/Sming/Sming/Makefile-project.mk
+else
+	PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+	export PATH
+	include $(SMING_HOME)/Makefile-project.mk
+endif

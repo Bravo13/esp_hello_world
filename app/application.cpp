@@ -18,7 +18,6 @@ void init()
 	if(digitalRead(FIRST_RUN_PIN) && AppSettings.load()){
 		Serial.println( os_printf("Config ver %s", AppSettings.ver.c_str()) );
 		driver_init();
-		
 	} else {
 		AppSettings.ver = "0.1a";
 		AppSettings.save();
