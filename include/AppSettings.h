@@ -23,17 +23,19 @@ struct ApplicationSettingsStorage
 		Serial.println("Loading settings");
 		DynamicJsonBuffer jsonBuffer;
 		int size = fileGetSize(APP_SETTINGS_FILE);
-		Serial.println(os_printf("Here is size - %d", size));
-		char *chJsonString = new char[size+1];
-		fileGetContent(APP_SETTINGS_FILE, chJsonString, size);
-		// JsonObject& root = jsonBuffer.parseObject(chJsonString);
-		if(0){
-		// if(!root["ver"]){
-			// ver = root["ver"];
+		if(size>0){
+			char *chJsonString = new char[size+1];
+			fileGetContent(APP_SETTINGS_FILE, chJsonString, size);
+			JsonObject& root = jsonBuffer.parseObject(chJsonString);
+			ver = root["ver"];
 
-			// JsonObject& network = root["network"];
-			// ssid = network["ssid"];
-			// password = network["password"];
+			JsonObject& network = root["network"];
+			ssid = network["ssid"];
+			password = network["password"];
+
+			if( !ver || !ssid ){
+				return 0;
+			}
 
 			return 1;
 		} else {
