@@ -11,14 +11,14 @@ include ./Makefile-user.mk
 # You can use Makefile-user.mk in each project or use enviromental variables to set it globally.
  
 ifndef SMING_HOME
-$(error SMING_HOME is not set. Please configure it in Makefile-user.mk)
+	$(error SMING_HOME is not set. Please configure it in Makefile-user.mk)
 endif
 ifndef ESP_HOME
-$(error ESP_HOME is not set. Please configure it in Makefile-user.mk)
+	$(error ESP_HOME is not set. Please configure it in Makefile-user.mk)
 endif
 
 # Include main Sming Makefile
-ifeq( $(OS), Windows_NT )
+ifeq ($(OS), Windows_NT)
 	include c:/tools/Sming/Sming/Makefile-project.mk
 else
 	PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin

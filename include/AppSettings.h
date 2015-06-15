@@ -20,17 +20,20 @@ struct ApplicationSettingsStorage
 
 	int load()
 	{
+		Serial.println("Loading settings");
 		DynamicJsonBuffer jsonBuffer;
 		int size = fileGetSize(APP_SETTINGS_FILE);
+		Serial.println(os_printf("Here is size - %d", size));
 		char *chJsonString = new char[size+1];
 		fileGetContent(APP_SETTINGS_FILE, chJsonString, size);
-		JsonObject& root = jsonBuffer.parseObject(chJsonString);
-		if(root.containsKey("ver")){
-			ver = root["ver"];
+		// JsonObject& root = jsonBuffer.parseObject(chJsonString);
+		if(0){
+		// if(!root["ver"]){
+			// ver = root["ver"];
 
-			JsonObject& network = root["network"];
-			ssid = network["ssid"];
-			password = network["password"];
+			// JsonObject& network = root["network"];
+			// ssid = network["ssid"];
+			// password = network["password"];
 
 			return 1;
 		} else {

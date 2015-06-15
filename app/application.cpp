@@ -11,6 +11,7 @@
 void init()
 {
 	Serial.begin(115200);
+	Serial.println("Hello!");
 	debug("Starting...");
 	pinMode(FIRST_RUN_PIN, INPUT);
 
