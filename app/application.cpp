@@ -11,17 +11,14 @@
 void init()
 {
 	Serial.begin(115200);
-	Serial.println("Hello!");
 	debug("Starting...");
 	pinMode(FIRST_RUN_PIN, INPUT);
 
 	web_run();
 	if(digitalRead(FIRST_RUN_PIN) && AppSettings.load()){
-		Serial.println( os_printf("Config ver %s", AppSettings.ver.c_str()) );
+		debugf("SSID:%s PASS:%s", AppSettings.ssid.c_str(), AppSettings.password.c_str());
 		driver_init();
 	} else {
-		AppSettings.ver = "0.1a";
-		AppSettings.save();
 		first_run();
 	}
 

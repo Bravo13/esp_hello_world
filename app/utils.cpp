@@ -7,6 +7,8 @@
 #include <SmingCore/SmingCore.h>
 #include <osapi.h>
 #include "driver.h"
+#include "AppSettings.h"
+#include "utils.h"
 
 int scanStatus = 0;
 BssList networks;
@@ -35,6 +37,60 @@ void web_cb_index(HttpRequest &request, HttpResponse &response) {
 }
 
 void web_cb_connect(HttpRequest &request, HttpResponse &response) {
+	String ssid = request.getQueryParameter("ssid");
+	bool ssidNeedPass = request.getQueryParameter("needPass");
+	String pass = request.getQueryParameter("pass");
+
+	JsonObjectStream* stream = new JsonObjectStream();
+	JsonObject& json = stream->getRoot();
+
+	json["result"] = (bool)false;
+
+	if( (WifiStation.getConnectionStatus() == eSCS_GotIP) && !ssid.length() ){
+		json["result"] = (bool)true;
+
+		// FIXME IP And SSID in json sends as garbage
+		json["ip"] = WifiStation.getIP().toString().c_str();
+		json["ssid"] = WifiStation.getSSID().c_str();
+	} else {
+		if( WifiStation.getConnectionStatus() == eSCS_Connecting ){
+			debug("WIFI Connecting");
+			if( WifiStation.isConnected() ){
+				debug("WIFI Connected");
+				json["connected"] = (bool)true;
+			} else {
+				debug("WIFI in connection");
+				json["connectInProgress"] = (bool)true;
+			}
+		} else {
+			if( WifiStation.isConnectionFailed() && !ssid.length() ){
+				debug("Connection was failed");
+				json["connectionFailed"] = WifiStation.getConnectionStatusName();
+			} else {
+				debug("Starting connection");
+
+				if(ssid.length() <= 0){
+					json["error"] = "Wrong SSID";
+				} else {
+					if( ssidNeedPass && (pass.length() <= 0) ){
+						json["error"] = "Passowrd not specified";
+					} else {
+						debugf("Connectiong to network %s", ssid.c_str());
+						WifiStation.enable(true);
+						WifiStation.config(ssid, pass);
+
+						AppSettings.ssid = ssid;
+						AppSettings.password = pass;
+						AppSettings.save();
+						json["result"] = (bool)true;
+					}
+				}
+			}
+		}
+	}
+
+	response.setAllowCrossDomainOrigin("*");
+	response.sendJsonObject(stream);
 }
 
 void web_cb_scan_status(HttpRequest &request, HttpResponse &response) {
@@ -138,6 +194,7 @@ void web_cb_driver_setpos(HttpRequest &request, HttpResponse &response) {
 }
 
 void web_run() {
+	WifiStation.enable(true);
 	server.listen(80);
 	server.addPath("/driver/pos", web_cb_driver_pos);
 	server.addPath("/driver/setpos", web_cb_driver_setpos);

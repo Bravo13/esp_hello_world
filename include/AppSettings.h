@@ -16,35 +16,42 @@ struct ApplicationSettingsStorage
 {
 	String ssid;
 	String password;
-	String ver;
 
 	int load()
 	{
 		Serial.println("Loading settings");
-		DynamicJsonBuffer jsonBuffer;
-		int size = fileGetSize(APP_SETTINGS_FILE);
-		if(size>0){
+		if(fileExist( APP_SETTINGS_FILE )){
+			DynamicJsonBuffer jsonBuffer;
+			int size = fileGetSize(APP_SETTINGS_FILE);
+			if( !(size>0) ){
+				debugf("Settings file size le 0");
+				return 0;
+			}
 			char *chJsonString = new char[size+1];
+			// FIXME chJsonString contains file name, not file content
+			debugf("JSON CONFIG %s", chJsonString);
 			fileGetContent(APP_SETTINGS_FILE, chJsonString, size);
 			JsonObject& root = jsonBuffer.parseObject(chJsonString);
-			ver = root["ver"];
 
 			JsonObject& network = root["network"];
 			ssid = network["ssid"];
 			password = network["password"];
 
-			if( !ver || !ssid ){
+			if( !ssid ){
+				debugf("SSID is empty");
 				return 0;
 			}
 
 			return 1;
 		} else {
+			debugf("Settings file not exists");
 			return 0;
 		}
 	}
 
 	void save()
 	{
+		debugf("Saving config");
 		DynamicJsonBuffer jsonBuffer;
 		JsonObject& root = jsonBuffer.createObject();
 
@@ -53,11 +60,9 @@ struct ApplicationSettingsStorage
 		network["ssid"] = ssid.c_str();
 		network["password"] = password.c_str();
 
-		root["ver"] = ver.c_str();
-
-
 		char buf[3048];
 		root.prettyPrintTo(buf, sizeof(buf)); //TODO: add file stream writing
+		Serial.println(buf);
 		fileSetContent(APP_SETTINGS_FILE, buf);
 	}
 
