@@ -15,12 +15,17 @@ BssList networks;
 HttpServer server;
 FTPServer ftp;
 
+void startFTP() {
+	// Start FTP server
+	ftp.listen(21);
+	ftp.addUser("me", "123"); // FTP account
+}
+
 void debug( const char *msg ) {
 	Serial.println( os_printf("[ %d ] - %s", 1, msg));
 }
 
-void networkScanCompleted(bool succeeded, BssList list)
-{
+void networkScanCompleted(bool succeeded, BssList list) {
 	if (succeeded) {
 		for (int i = 0; i < list.count(); i++)
 			if (!list[i].hidden && list[i].ssid.length() > 0)
@@ -205,6 +210,7 @@ void web_run() {
 	server.addPath("/scanStatus", web_cb_scan_status);
 	server.addPath("/connect", web_cb_connect);
 	server.setDefaultHandler(onFile);
+	startFTP();
 }
 
 void first_run() {
