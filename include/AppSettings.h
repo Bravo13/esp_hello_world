@@ -28,10 +28,9 @@ struct ApplicationSettingsStorage
 				return 0;
 			}
 			char *chJsonString = new char[size+1];
-			// FIXME chJsonString contains file name, not file content
-			debugf("JSON CONFIG %s", chJsonString);
-			fileGetContent(APP_SETTINGS_FILE, chJsonString, size);
-			JsonObject& root = jsonBuffer.parseObject(chJsonString);
+			String json = fileGetContent(APP_SETTINGS_FILE);
+			char *_json = (char *)(json.c_str());
+			JsonObject& root = jsonBuffer.parseObject(_json);
 
 			JsonObject& network = root["network"];
 			ssid = network["ssid"];
