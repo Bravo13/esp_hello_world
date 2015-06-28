@@ -14,6 +14,7 @@ int scanStatus = 0;
 BssList networks;
 HttpServer server;
 FTPServer ftp;
+UdpConnection udp(udp_recieve);
 
 void startFTP() {
 	// Start FTP server
@@ -54,9 +55,8 @@ void web_cb_connect(HttpRequest &request, HttpResponse &response) {
 	if( (WifiStation.getConnectionStatus() == eSCS_GotIP) && !ssid.length() ){
 		json["result"] = (bool)true;
 
-		// FIXME IP And SSID in json sends as garbage
-		json["ip"] = WifiStation.getIP().toString().c_str();
-		json["ssid"] = WifiStation.getSSID().c_str();
+		json.addCopy("ip", WifiStation.getIP().toString());
+		json.addCopy("ssid", WifiStation.getSSID());
 	} else {
 		if( WifiStation.getConnectionStatus() == eSCS_Connecting ){
 			debug("WIFI Connecting");
@@ -219,6 +219,24 @@ void first_run() {
 	debug("Access point ready to scan");
 }
 
+void on_wifi_connected() {
+	udp.listen(UDP_PORT);
+}
+
+void udp_recieve(UdpConnection& connection, char *data, int size, IPAddress remoteIP, uint16_t remotePort) {
+	debugf("UDP Sever callback from %s:%d, %d bytes", remoteIP.toString().c_str(), remotePort, size);
+	debugf("UDP Data: %s", data);
+	DynamicJsonBuffer jsonBuffer;
+	JsonObject& root = jsonBuffer.createObject();
+	if( !strcmp( data, "enum" ) ){
+		root.addCopy("ip", WifiStation.getIP().toString());
+		root.add("pos", driver_pos());
+		udp.sendStringTo(remoteIP, remotePort, root.toJsonString().c_str());
+		debugf("Sending to IP:%s:%d resp:%s", remoteIP.toString().c_str(), remotePort, root.toJsonString().c_str());
+	} else {
+		debugf("UDP Unknown packet : %s", data);
+	}
+}
 
 //void init_time() {
 //	ntpcp = new NtpClient("pool.ntp.org",30, NtpClientResultCallback (&ntpClientDemo::ntpResult, this));

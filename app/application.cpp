@@ -17,6 +17,8 @@ void init()
 	web_run();
 	if(digitalRead(FIRST_RUN_PIN) && AppSettings.load()){
 		debugf("SSID:%s PASS:%s", AppSettings.ssid.c_str(), AppSettings.password.c_str());
+		WifiStation.config(AppSettings.ssid.c_str(), AppSettings.password.c_str());
+		WifiStation.waitConnection(on_wifi_connected);
 		driver_init();
 	} else {
 		first_run();
