@@ -116,6 +116,7 @@ void web_cb_scan_status(HttpRequest &request, HttpResponse &response) {
 
 void web_cb_start_scan(HttpRequest &request, HttpResponse &response) {
 	debug("Running scan of networks");
+	# FIXME Clear networks list wariable
 	WifiStation.startScan(networkScanCompleted);
 	JsonObjectStream* stream = new JsonObjectStream();
 	JsonObject& json = stream->getRoot();
